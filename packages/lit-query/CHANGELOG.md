@@ -1,5 +1,14 @@
 # @tanstack/lit-query
 
+## 0.2.7
+
+### Patch Changes
+
+- Fix redundant Lit host updates for function-backed query options, mutation state selectors, and tracked query result reads. ([#10789](https://github.com/TanStack/query/pull/10789))
+
+- Updated dependencies []:
+  - @tanstack/query-core@5.100.15
+
 ## 0.2.6
 
 ### Patch Changes

@@ -1668,6 +1668,32 @@ describe('queryObserver', () => {
     unsubscribe()
   })
 
+  it('should settle the promise for disabled queries when experimental_prefetchInRender is enabled', async () => {
+    const key = queryKey()
+    const fetchDelay = 10
+    const queryData = 'data'
+    const settledValue = 'settled'
+    const pendingValue = 'pending'
+    const queryFn = vi.fn(() => sleep(fetchDelay).then(() => queryData))
+    const observer = new QueryObserver(queryClient, {
+      queryKey: key,
+      queryFn,
+      enabled: false,
+    })
+
+    const tracked = observer.trackResult(observer.getCurrentResult())
+    const resultPromise = Promise.race([
+      tracked.promise.then(() => settledValue),
+      sleep(fetchDelay).then(() => pendingValue),
+    ])
+
+    await vi.advanceTimersByTimeAsync(fetchDelay)
+    const result = await resultPromise
+
+    expect(result).toBe(settledValue)
+    expect(queryFn).not.toHaveBeenCalled()
+  })
+
   it('should not refetchOnMount when set to "always" when staleTime is Static', async () => {
     const key = queryKey()
     const queryFn = vi.fn(() => 'data')

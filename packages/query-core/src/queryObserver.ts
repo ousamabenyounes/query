@@ -597,11 +597,14 @@ export class QueryObserver<
     if (this.options.experimental_prefetchInRender) {
       const hasResultData = nextResult.data !== undefined
       const isErrorWithoutData = nextResult.status === 'error' && !hasResultData
+      const isDisabledWithoutData = !nextResult.isEnabled && !hasResultData
       const finalizeThenableIfPossible = (thenable: PendingThenable<TData>) => {
         if (isErrorWithoutData) {
           thenable.reject(nextResult.error)
         } else if (hasResultData) {
           thenable.resolve(nextResult.data as TData)
+        } else if (isDisabledWithoutData) {
+          thenable.resolve(undefined as TData)
         }
       }
 
